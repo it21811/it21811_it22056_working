@@ -4,57 +4,46 @@ import jakarta.persistence.*;
 
 @Entity
 public class Property {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @Column(name = "propertyid")
+    private int propertyid;
 
-    @Column
+    @Column(name = "address")
     private String address;
 
-    @Column
+    @Column(name = "municipality")
     private String municipality;
 
-    @Column
-    private Integer floor;
+    @Column(name = "price")
+    private int price;
 
-    @Column
-    private String sizeCategory;
-
-    @Column
-    private Integer rooms;
-
-    @Column
-    private Integer price;
-
-    @Column
-    private Integer verification; // 1: verified, 2: not verified
+    @Column(name = "verified")
+    private int verified;
 
     @ManyToOne
-    @JoinColumn(name = "owner_id", nullable = false)
-    private Owner owner;
+    @JoinColumn(name = "user_id") // Changed from owner_id to user_id
+    private User user; // Changed from owner to user
+
+    public Property(int propertyid, String address, String municipality, int price, int verified, User user) { // Changed from owner to user
+        this.propertyid = propertyid;
+        this.address = address;
+        this.municipality = municipality;
+        this.price = price;
+        this.verified = verified;
+        this.user = user; // Changed from owner to user
+    }
 
     public Property() {
     }
 
-    public Property(String address, String municipality, Integer floor, String sizeCategory,
-                    Integer rooms, Integer price, Integer verification) {
-        this.address = address;
-        this.municipality = municipality;
-        this.floor = floor;
-        this.sizeCategory = sizeCategory;
-        this.rooms = rooms;
-        this.price = price;
-        this.verification = verification;
-    }
-
     // Getters and Setters
-    public Integer getId() {
-        return id;
+    public int getPropertyid() {
+        return propertyid;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setPropertyid(int propertyid) {
+        this.propertyid = propertyid;
     }
 
     public String getAddress() {
@@ -73,65 +62,39 @@ public class Property {
         this.municipality = municipality;
     }
 
-    public Integer getFloor() {
-        return floor;
-    }
-
-    public void setFloor(Integer floor) {
-        this.floor = floor;
-    }
-
-    public String getSizeCategory() {
-        return sizeCategory;
-    }
-
-    public void setSizeCategory(String sizeCategory) {
-        this.sizeCategory = sizeCategory;
-    }
-
-    public Integer getRooms() {
-        return rooms;
-    }
-
-    public void setRooms(Integer rooms) {
-        this.rooms = rooms;
-    }
-
-    public Integer getPrice() {
+    public int getPrice() {
         return price;
     }
 
-    public void setPrice(Integer price) {
+    public void setPrice(int price) {
         this.price = price;
     }
 
-    public Integer getVerification() {
-        return verification;
+    public int getVerified() {
+        return verified;
     }
 
-    public void setVerification(Integer verification) {
-        this.verification = verification;
+    public void setVerified(int verified) {
+        this.verified = verified;
     }
 
-    public Owner getOwner() {
-        return owner;
+    public User getUser() { // Changed from getOwner to getUser
+        return user; // Changed from owner to user
     }
 
-    public void setOwner(Owner owner) {
-        this.owner = owner;
+    public void setUser(User user) { // Changed from setOwner to setUser
+        this.user = user; // Changed from owner to user
     }
-
     @Override
     public String toString() {
         return "Property{" +
-                "id=" + id +
+                "id=" + propertyid +
                 ", address='" + address + '\'' +
-                ", municipality='" + municipality + '\'' +
-                ", floor=" + floor +
-                ", sizeCategory='" + sizeCategory + '\'' +
-                ", rooms=" + rooms +
+                ", municipality=" + municipality +
                 ", price=" + price +
-                ", verification=" + verification +
+                ", verified=" + verified +
+                ", user=" + user +
                 '}';
     }
 }
+

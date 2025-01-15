@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Property</title>
+</head>
+<body>
+<h1>Add Property</h1>
+<form action="/properties" method="post">
+  <label for="name">Name:</label>
+  <input type="text" id="name" name="name" required>
+  <br>
+  <label for="user">User:</label>
+  <select id="user" name="userId" required>
+    <!-- Loop through users -->
+    <option th:each="user : ${users}" th:value="${user.id}" th:text="${user.name}"></option>
+  </select>
+  <br>
+  <button type="submit">Save Property</button>
+</form>
+<a href="/properties">Back to List</a>
+</body>
+</html>
+``

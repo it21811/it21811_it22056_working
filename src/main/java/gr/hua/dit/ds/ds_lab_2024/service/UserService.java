@@ -1,65 +1,141 @@
 package gr.hua.dit.ds.ds_lab_2024.service;
 
+import gr.hua.dit.ds.ds_lab_2024.entities.Role;
 import gr.hua.dit.ds.ds_lab_2024.entities.User;
+import gr.hua.dit.ds.ds_lab_2024.repositories.RoleRepository;
 import gr.hua.dit.ds.ds_lab_2024.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.transaction.Transactional;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
-    private final UserRepository userRepository;
 
-    @Autowired
-    public UserService(UserRepository userRepository) {
+    private UserRepository userRepository;
+
+    private RoleRepository roleRepository;
+
+    private BCryptPasswordEncoder passwordEncoder;
+
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    // Fetch all users
-    public List<User> getAllUsers() {
+    @Transactional
+    public Integer saveUser(User user) {
+        String passwd= user.getPassword();
+        String encodedPassword = passwordEncoder.encode(passwd);
+        user.setPassword(encodedPassword);
+
+        Role role = roleRepository.findByName("ROLE_USER")
+                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+        Set<Role> roles = new HashSet<>();
+        roles.add(role);
+        user.setRoles(roles);
+
+        user = userRepository.save(user);
+        return user.getId();
+    }
+
+    @Transactional
+    public Integer updateUser(User user) {
+        user = userRepository.save(user);
+        return user.getId();
+    }
+    @Override
+    @Transactional
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Optional<User> opt = userRepository.findByUsername(username);
+
+        if(opt.isEmpty())
+            throw new UsernameNotFoundException("User with email: " +username +" not found !");
+        else {
+            User user = opt.get();
+            return new org.springframework.security.core.userdetails.User(
+                    user.getEmail(),
+                    user.getPassword(),
+                    user.getRoles()
+                            .stream()
+                            .map(role-> new SimpleGrantedAuthority(role.toString()))
+                            .collect(Collectors.toSet())
+            );
+        }
+    }
+
+    @Transactional
+    public User getLoggedInUserByEmail() {
+        // Get the current authentication object
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new RuntimeException("No logged-in user found.");
+        }
+
+        // Get the email from the authentication object (this is the 'email' field)
+        String email = authentication.getName();  // This will give you the logged-in user's email
+
+        // Fetch the user by email (using the email column)
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User with email: " + email + " not found!"));
+    }
+
+    @Transactional
+    public Object getUsers() {
         return userRepository.findAll();
     }
 
-    // Fetch a user by ID
-    public User getUserById(Integer id) {
-        Optional<User> user = userRepository.findById(id);
-        if (user.isEmpty()) {
-            throw new RuntimeException("User not found with ID: " + id);
+    public Object getUser(Long userId) {
+        return userRepository.findById(userId).get();
+    }
+    // Updated method to get a user by username
+    public User getbyUsername(String username) {
+        // Find the user by username from the repository
+        Optional<User> userOptional = userRepository.findByUsername(username);
+
+        // Return the user if present, or throw an exception if not found
+        if (userOptional.isPresent()) {
+            return userOptional.get();
+        } else {
+            // You can throw a custom exception or return null depending on your needs
+            throw new UsernameNotFoundException("User not found with username: " + username);
         }
-        return user.get();
+    }
+    @Transactional
+    public void updateOrInsertRole(Role role) {
+        roleRepository.updateOrInsert(role);
+    }
+    public void deleteUser(Long userId) {
+        userRepository.deleteById(userId);
     }
 
-    // Create a new user
-    public User createUser(User user) {
-        if (userRepository.existsByUsername(user.getUsername())) {
-            throw new RuntimeException("Username is already taken: " + user.getUsername());
-        }
-        if (userRepository.existsByEmail(user.getEmail())) {
-            throw new RuntimeException("Email is already in use: " + user.getEmail());
-        }
-        return userRepository.save(user);
+    @Transactional
+    public void updateVerifiedStatus(Long userId, int verified) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+        user.setVerified(verified); // Validate and update the verified field
+        userRepository.save(user);  // Save changes
     }
 
-    // Update existing user
-    public User updateUser(Integer id, User updatedUser) {
-        User existingUser = getUserById(id);
-
-        existingUser.setUsername(updatedUser.getUsername());
-        existingUser.setEmail(updatedUser.getEmail());
-        existingUser.setPassword(updatedUser.getPassword());
-        existingUser.setRoles(updatedUser.getRoles());
-
-        return userRepository.save(existingUser);
+    @Transactional
+    public Optional<User> getUsersByVerifiedStatus(int verified) {
+        return userRepository.findByVerified(verified);
     }
-
-    // Delete user by ID
-    public void deleteUser(Integer id) {
-        if (!userRepository.existsById(id)) {
-            throw new RuntimeException("User not found with ID: " + id);
-        }
-        userRepository.deleteById(id);
+    // Check if a user with a specific email exists
+    public boolean userExists(String email) {
+        return userRepository.findByEmail(email).isPresent();
     }
 }

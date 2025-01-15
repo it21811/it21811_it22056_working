@@ -2,39 +2,43 @@ package gr.hua.dit.ds.ds_lab_2024.service;
 
 import gr.hua.dit.ds.ds_lab_2024.entities.Property;
 import gr.hua.dit.ds.ds_lab_2024.repositories.PropertyRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PropertyService {
 
     private final PropertyRepository propertyRepository;
 
-    @Autowired
     public PropertyService(PropertyRepository propertyRepository) {
         this.propertyRepository = propertyRepository;
     }
 
-    public List<Property> getAllProperties() {
+    public List<Property> getProperties() {
         return propertyRepository.findAll();
     }
 
     public Property getPropertyById(Integer id) {
-        return propertyRepository.findById(id).orElse(null);
+        Optional<Property> property = propertyRepository.findById(id);
+        if (property.isEmpty()) {
+            throw new RuntimeException("Property not found with id: " + id);
+        }
+        return property.get();
     }
 
-    public Property createProperty(Property property) {
-        return propertyRepository.save(property);
+    public void saveProperty(Property property) {
+        propertyRepository.save(property);
     }
 
-    public Property updateProperty(Integer id, Property property) {
-        property.setId(id);
-        return propertyRepository.save(property);
+    public void updateProperty(Property property) {
+        propertyRepository.save(property);
     }
 
     public void deleteProperty(Integer id) {
         propertyRepository.deleteById(id);
     }
+
+
 }

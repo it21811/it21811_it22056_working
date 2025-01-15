@@ -7,42 +7,46 @@ public class Request {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @Column(name = "requestid")
+    private int requestid;
 
     @ManyToOne
-    @JoinColumn(name = "tenant_id", nullable = false)
-    private Tenant tenant;
+    @JoinColumn(name = "tenant_id")
+    private User tenant;
 
     @ManyToOne
-    @JoinColumn(name = "property_id", nullable = false)
+    @JoinColumn(name = "property_id")
     private Property property;
 
-    @Column
-    private Integer contractDuration;
+    @Column(name = "status")
+    private Integer status = 1; // Default to 1 for "verified"
 
-    public Request() {
+    // Constructors, getters, and setters
+
+    public Integer getStatus() {
+        return status;
     }
 
-    public Request(Tenant tenant, Property property, Integer contractDuration) {
-        this.tenant = tenant;
-        this.property = property;
-        this.contractDuration = contractDuration;
+    public void setStatus(Integer status) {
+        if (status != 1 && status != 2) {
+            throw new IllegalArgumentException("Status must be 1 (verified) or 2 (not verified).");
+        }
+        this.status = status;
     }
 
-    // Getters and Setters
-    public Integer getId() {
-        return id;
+    public int getRequestid() {
+        return requestid;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setRequestid(int requestid) {
+        this.requestid = requestid;
     }
 
-    public Tenant getTenant() {
+    public User getTenant() {
         return tenant;
     }
 
-    public void setTenant(Tenant tenant) {
+    public void setTenant(User tenant) {
         this.tenant = tenant;
     }
 
@@ -52,13 +56,5 @@ public class Request {
 
     public void setProperty(Property property) {
         this.property = property;
-    }
-
-    public Integer getContractDuration() {
-        return contractDuration;
-    }
-
-    public void setContractDuration(Integer contractDuration) {
-        this.contractDuration = contractDuration;
     }
 }

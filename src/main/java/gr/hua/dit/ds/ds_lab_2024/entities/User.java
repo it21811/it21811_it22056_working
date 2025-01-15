@@ -4,17 +4,18 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+
 import java.util.HashSet;
 import java.util.Set;
 
-@Entity
-@Inheritance(strategy = InheritanceType.JOINED)
-@Table(name = "users", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "username"),
-        @UniqueConstraint(columnNames = "email")
-})
-public class User {
 
+@Entity
+@Table(	name = "users",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = "username"),
+                @UniqueConstraint(columnNames = "email")
+        })
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -33,7 +34,7 @@ public class User {
     private String password;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "user_roles",
+    @JoinTable(	name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
@@ -47,7 +48,6 @@ public class User {
         this.password = password;
     }
 
-    // Getters and Setters
     public Integer getId() {
         return id;
     }
@@ -91,5 +91,19 @@ public class User {
     @Override
     public String toString() {
         return username;
+    }
+    @Column(name = "verified", nullable = true)
+    private Integer verified; // Use Integer instead of int to allow null
+
+    // Getter and Setter for verified
+    public int getVerified() {
+        return verified;
+    }
+
+    public void setVerified(int verified) {
+        if (verified != 1 && verified != 2) {
+            throw new IllegalArgumentException("Verified must be 1 or 2.");
+        }
+        this.verified = verified;
     }
 }

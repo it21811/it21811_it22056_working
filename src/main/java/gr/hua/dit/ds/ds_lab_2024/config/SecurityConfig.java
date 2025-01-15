@@ -15,9 +15,11 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
 
-    private final UserService userService;
-    private final UserDetailsService userDetailsService;
-    private final BCryptPasswordEncoder passwordEncoder;
+    private UserService userService;
+
+    private UserDetailsService userDetailsService;
+
+    private BCryptPasswordEncoder passwordEncoder;
 
     public SecurityConfig(UserService userService, UserDetailsService userDetailsService, BCryptPasswordEncoder passwordEncoder) {
         this.userService = userService;
@@ -29,22 +31,17 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers(
-                                "/",
-                                "/home",
-                                "/register",
-                                "/saveUser",
-                                "/images/**",
-                                "/js/**",
-                                "/css/**"
-                        ).permitAll()
+                        .requestMatchers("/", "/home", "/register", "/saveUser", "/images/**", "/js/**", "/css/**").permitAll()
+                        .requestMatchers("/teacher/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/", true) // Changed default success URL
+                        .defaultSuccessUrl("/property", true)
                         .permitAll())
                 .logout((logout) -> logout.permitAll());
         return http.build();
     }
+
+
 }

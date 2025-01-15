@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Profile</title>
+</head>
+<body>
+<h1>User Profile</h1>
+
+<!-- Displaying User Information -->
+<p><strong>User ID:</strong> <span th:text="${user.id}"></span></p>
+<p><strong>Email:</strong> <span th:text="${user.email}"></span></p>
+<p><strong>Username:</strong> <span th:text="${user.username}"></span></p>
+
+<!-- Masking the Password (not displaying the real password for security) -->
+<p><strong>Password:</strong> **********</p>
+
+</body>
+</html>

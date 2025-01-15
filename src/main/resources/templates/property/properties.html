@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{page_layout/layout}" xmlns:sec="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Properties</title>
+</head>
+<body>
+<div layout:fragment="main-content">
+    <div th:if="${ not#lists.isEmpty(properties)}">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Property ID</th>
+                <th>Address</th>
+                <th>Municipality</th>
+                <th>Price (€)</th>
+                <th>Verified</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="property : ${properties}">
+                <td th:text="${property.propertyid}"></td>
+                <td th:text="${property.address}"></td>
+                <td th:text="${property.municipality}"></td>
+                <td th:text="${property.price}"></td>
+                <td>
+                    <span th:if="${property.verified == 1}" th:text="'Yes'"></span>
+                    <span th:if="${property.verified == 0}" th:text="'No'"></span>
+                </td>
+                <td>
+                    <a class="btn btn-outline-warning btn-sm" th:href="@{'/property/edit/' + ${property.propertyid}}">Edit</a>
+                    <a class="btn btn-outline-danger btn-sm" th:href="@{'/property/delete/' + ${property.propertyid}}">Delete</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div th:if="${ #lists.isEmpty(properties)}">
+        <p>No properties found!</p>
+    </div>
+    <a sec:authorize="hasRole('ADMIN')" href="/property/new" class="btn btn-primary" role="button">Add New Property</a>
+</div>
+</body>
+</html>

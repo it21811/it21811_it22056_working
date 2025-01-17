@@ -39,6 +39,10 @@ public class PropertyService {
     public void deleteProperty(Integer id) {
         propertyRepository.deleteById(id);
     }
-
-
+    public List<Property> filterProperties(String address, String municipality, Integer minPrice, Integer maxPrice, Integer verified) {
+        return propertyRepository.filterProperties(address, municipality, minPrice, maxPrice, verified);
+    }
+    public List<String> getDistinctMunicipalities() {
+        return propertyRepository.findDistinctMunicipalities();
+    }
 }

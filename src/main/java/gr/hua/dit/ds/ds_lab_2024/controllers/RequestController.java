@@ -21,8 +21,9 @@ public class RequestController {
     private final RequestService requestService;
     private final UserService userService;
     private final PropertyService propertyService;
+
     @Autowired
-    public RequestController(RequestService requestService,UserService userService,PropertyService propertyService) {
+    public RequestController(RequestService requestService, UserService userService, PropertyService propertyService) {
         this.requestService = requestService;
         this.userService = userService;
         this.propertyService = propertyService;
@@ -35,36 +36,75 @@ public class RequestController {
         return "request/requests";
     }
 
-
-
-    @Secured("ROLE_ADMIN")
+    // Allow both ADMIN and verified TENANT to access this endpoint
+    @Secured({"ROLE_ADMIN", "ROLE_TENANT"})
     @GetMapping("/new")
     public String addRequest(Model model) {
+        // Fetch the logged-in user
+        var loggedInUser = userService.getLoggedInUserByEmail(); // Assuming this method exists
+
+        // If the user is a tenant, ensure they are verified
+        boolean isTenant = loggedInUser.getRoles().stream()
+                .anyMatch(role -> role.getName().equals("ROLE_TENANT"));
+        Integer verifiedStatus = loggedInUser.getVerified();
+
+        if (isTenant && (verifiedStatus == null || verifiedStatus != 2)) {
+            model.addAttribute("errorMessage", "You must be verified to add a request.");
+            return "error/error_unverified"; // Redirect to an error page or display an error message
+        }
+
+        // Prepare the request form
         Request request = new Request();
         model.addAttribute("request", request);
-        model.addAttribute("tenants", userService.getUsers()); // Assuming a method to fetch tenants
+
+        if (isTenant) {
+            // Pass only the logged-in tenant to the model
+            model.addAttribute("tenants", List.of(loggedInUser));
+        } else {
+            // For admins, pass all tenants
+            model.addAttribute("tenants", userService.getUsers());
+        }
+
         model.addAttribute("properties", propertyService.getProperties());
         return "request/request";
     }
-    @Secured("ROLE_ADMIN")
+
+    // Allow both ADMIN and verified TENANT to save a new request
+    @Secured({"ROLE_ADMIN", "ROLE_TENANT"})
     @PostMapping("/new")
     public String saveRequest(@Valid @ModelAttribute("request") Request request,
                               BindingResult theBindingResult, Model model) {
+        // Fetch the logged-in user
+        var loggedInUser = userService.getLoggedInUserByEmail();
+
+        // If the user is a tenant, ensure they are verified
+        boolean isTenant = loggedInUser.getRoles().stream()
+                .anyMatch(role -> role.getName().equals("ROLE_TENANT"));
+        Integer verifiedStatus = loggedInUser.getVerified();
+
+        if (isTenant && (verifiedStatus == null || verifiedStatus != 2)) {
+            model.addAttribute("errorMessage", "You must be verified to add a request.");
+            return "error/error_unverified";
+        }
+
         if (theBindingResult.hasErrors()) {
-            // If validation errors occur, reload the form with error messages
-            model.addAttribute("tenants", userService.getUsers());
+            // Reload the form with validation errors
+            if (isTenant) {
+                model.addAttribute("tenants", List.of(loggedInUser));
+            } else {
+                model.addAttribute("tenants", userService.getUsers());
+            }
             model.addAttribute("properties", propertyService.getProperties());
             System.out.println("Error in form submission");
             return "request/request";
         } else {
-            // Save the request object to the database
+            // Save the request and redirect
             requestService.createRequest(request);
             model.addAttribute("requests", requestService.getRequests());
             model.addAttribute("successMessage", "Request added successfully!");
-            return "request/requests"; // Redirect to the list of requests after saving
+            return "redirect:/request"; // Redirect to the list of requests
         }
     }
-
 
     @Secured("ROLE_ADMIN")
     @GetMapping("/delete/{id}")

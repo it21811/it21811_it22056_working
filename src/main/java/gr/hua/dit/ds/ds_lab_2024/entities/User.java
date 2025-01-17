@@ -96,11 +96,11 @@ public class User {
     private Integer verified; // Use Integer instead of int to allow null
 
     // Getter and Setter for verified
-    public int getVerified() {
+    public Integer getVerified() {
         return verified;
     }
 
-    public void setVerified(int verified) {
+    public void setVerified(Integer verified) {
         if (verified != 1 && verified != 2) {
             throw new IllegalArgumentException("Verified must be 1 or 2.");
         }

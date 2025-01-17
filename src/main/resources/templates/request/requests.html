@@ -41,7 +41,8 @@
   <div th:if="${ #lists.isEmpty(requests)}">
     <p>No requests found!</p>
   </div>
-  <a sec:authorize="hasRole('ADMIN')" href="/request/new" class="btn btn-primary" role="button">Add New Request</a>
+  <a sec:authorize="hasRole('ADMIN') or hasRole('TENANT')" href="/request/new" class="btn btn-primary" role="button">Add New Request</a>
+
 </div>
 </body>
 </html>

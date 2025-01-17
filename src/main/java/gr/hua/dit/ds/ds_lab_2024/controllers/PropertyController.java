@@ -11,6 +11,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("property")
 public class PropertyController {
@@ -110,6 +112,26 @@ public class PropertyController {
         propertyService.deleteProperty(id);
         model.addAttribute("msg", "Property deleted successfully!");
         return "redirect:/property";
+    }
+    @GetMapping("/filter")
+    public String showFilterPage(Model model) {
+        List<String> municipalities = propertyService.getDistinctMunicipalities();
+        model.addAttribute("municipalities", municipalities);
+
+        return "property/filter-properties";
+    }
+
+    @GetMapping("/filter/results")
+    public String filterProperties(
+            @RequestParam(required = false) String address,
+            @RequestParam(required = false) String municipality,
+            @RequestParam(required = false) Integer minPrice,
+            @RequestParam(required = false) Integer maxPrice,
+            @RequestParam(required = false) Integer verified,
+            Model model) {
+        List<Property> filteredProperties = propertyService.filterProperties(address, municipality, minPrice, maxPrice, verified);
+        model.addAttribute("properties", filteredProperties);
+        return "property/properties"; // Use the existing properties listing template to show results
     }
 
 

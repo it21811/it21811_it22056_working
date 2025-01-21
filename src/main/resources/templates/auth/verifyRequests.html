@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{page_layout/layout}">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Verify Requests</title>
+</head>
+<body>
+<div layout:fragment="main-content">
+
+  <h1>Tenancy Verification Requests</h1>
+
+  <div th:if="${not #lists.isEmpty(users)}">
+    <table class="table">
+      <thead>
+      <tr>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="user : ${users}">
+        <td th:text="${user.username}"></td>
+        <td th:text="${user.email}"></td>
+        <td>
+          <!-- Approve tenancy request button -->
+          <a class="btn btn-success" th:href="@{/auth/approveTenancy/{id}(id=${user.id})}">Approve Tenancy</a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div th:if="${#lists.isEmpty(users)}">
+    <p>No tenancy verification requests found!</p>
+  </div>
+
+  <a href="/users" class="btn btn-primary" role="button">Back to Users List</a>
+
+</div>
+</body>
+</html>

@@ -1,6 +1,7 @@
 package gr.hua.dit.ds.ds_lab_2024.repositories;
 
 import gr.hua.dit.ds.ds_lab_2024.entities.Property;
+import gr.hua.dit.ds.ds_lab_2024.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,4 +24,11 @@ public interface PropertyRepository extends JpaRepository<Property, Integer> {
 
     @Query("SELECT DISTINCT p.municipality FROM Property p")
     List<String> findDistinctMunicipalities();
+
+
+        List<Property> findByUser(User user); // Fetch properties by user
+
+
+
+
 }

@@ -9,6 +9,7 @@ import gr.hua.dit.ds.ds_lab_2024.repositories.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -172,6 +173,39 @@ public class RequestService {
     }
     public void deleteRequest(Integer id) {
         requestRepository.deleteById(id);
+    }
+    public List<Request> getRequestsForLoggedInUserProperties() {
+        // Get the logged-in user by calling the method from UserService
+        User loggedInUser = userService.getLoggedInUserByEmail();
+
+        // Get the properties owned by the logged-in user
+        List<Property> userProperties = propertyService.getPropertiesByOwner(loggedInUser);
+
+        // Get all requests and filter them by the properties owned by the logged-in user
+        List<Request> allRequests = requestRepository.findAll();
+
+        List<Request> userRequests = new ArrayList<>();
+        for (Request request : allRequests) {
+            if (userProperties.contains(request.getProperty())) {
+                userRequests.add(request);
+            }
+        }
+
+        return userRequests;
+    }
+    // Method to verify the request (change status to 1 - verified)
+    public void verifyRequest(int requestId) {
+        Request request = requestRepository.findById(requestId)
+                .orElseThrow(() -> new RuntimeException("Request not found with ID: " + requestId));
+
+        // Ensure the status is not already verified
+        if (request.getStatus() == 1) {
+            throw new IllegalStateException("Request is already verified.");
+        }
+
+        // Set the status to 1 (Verified)
+        request.setStatus(1);
+        requestRepository.save(request);  // Save the updated request
     }
 
 }

@@ -11,6 +11,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+
+import java.util.Collections;
+import java.util.List;
+
 @Controller
 public class UserController {
 
@@ -151,6 +155,61 @@ public class UserController {
         model.addAttribute("user", loggedInUser);  // Add the user to the model
         return "profile";  // Return the profile view
     }
+    // New method for users to request tenancy
+    @GetMapping("/requestTenancy")
+    public String requestTenancy(Model model) {
+        // Get the logged-in user
+        User loggedInUser = userService.getLoggedInUserByEmail();
 
+        // Check if the user is already verified (verified = 2)
+        if (loggedInUser.getVerified() != null && loggedInUser.getVerified() == 2) {
+            // If already verified, redirect to the profile page with a message or show an error
+            return "redirect:/profile?error=alreadyVerified";
+        }
+        // Set verified to 1 to request tenancy
+        loggedInUser.setVerified(1);
+        userService.updateUser(loggedInUser);
+
+        // Add a success message to the model
+        model.addAttribute("successMessage", "Tenancy has been requested successfully.");
+
+        // Redirect to profile page after request
+        return "profile";  // Redirect to profile page after request
+    }
+
+
+    // New method for admin to view and approve tenancy requests
+    @GetMapping("/auth/verifyRequests")
+    public String showVerificationRequests(Model model) {
+        // Fetch users who have requested tenancy (verified == 1)
+        List<User> users = userService.getUsersByVerifiedStatus(1);
+
+        // Print the users to the console
+        System.out.println("Users requesting tenancy verification:");
+        users.forEach(user -> System.out.println("User ID: " + user.getId() + ", Username: " + user.getUsername() + ", Email: " + user.getEmail()));
+
+        model.addAttribute("users", users);
+        return "auth/verifyRequests";  // Render verifyRequests view
+    }
+
+    // New method for admin to approve tenancy and set verified to 2
+    @GetMapping("/auth/approveTenancy/{userId}")
+    public String approveTenancy(@PathVariable Long userId) {
+        System.out.println("test test");
+        // Set verified to 2 (approved)
+        userService.updateVerifiedStatus(userId, 2);
+        // Print the verified status
+        User user = (User) userService.getUser(userId);
+        System.out.println("User with ID: " + userId + " has verified status: " + user.getVerified());
+        // Add tenant role to the user
+
+        Role tenantRole = roleRepository.findByName("ROLE_TENANT")
+                .orElseThrow(() -> new RuntimeException("Error: Role 'ROLE_TENANT' is not found."));
+        user.getRoles().add(tenantRole);
+
+        userService.updateUser(user);  // Save changes after adding the role
+
+        return "redirect:/auth/verifyRequests";  // Redirect back to requests page
+    }
 
 }

@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -131,7 +132,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public Optional<User> getUsersByVerifiedStatus(int verified) {
+    public List<User> getUsersByVerifiedStatus(int verified) {
         return userRepository.findByVerified(verified);
     }
     // Check if a user with a specific email exists

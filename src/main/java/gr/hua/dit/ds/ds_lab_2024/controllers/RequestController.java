@@ -113,4 +113,31 @@ public class RequestController {
         model.addAttribute("msg", "Request deleted successfully!");
         return "redirect:/request";
     }
+    @GetMapping("/myRequests")
+    public String showMyRequests(Model model) {
+        // Fetch the requests related to the logged-in user's properties
+        List<Request> userRequests = requestService.getRequestsForLoggedInUserProperties();
+
+        // Add the requests to the model
+        model.addAttribute("requests", userRequests);
+        System.out.println("bla bla test" ); // Debugging line
+        return "request/myrequests"; // Return the view to display the requests
+    }
+   @GetMapping("/verify/{id}")
+    public String verifyRequest(@PathVariable("id") int id, Model model) {
+        // Call the service method to verify the request
+        System.out.println("Verifying request with ID: " + id); // Debugging line
+        requestService.verifyRequest(id);
+
+        // Add a success message to the model
+        model.addAttribute("msg", "Request verified successfully!");
+
+        // Redirect to the page displaying the user's requests
+       return "redirect:/request/myRequests";
+    }
+
+
+
+
+
 }

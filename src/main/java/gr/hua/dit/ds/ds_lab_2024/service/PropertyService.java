@@ -1,6 +1,7 @@
 package gr.hua.dit.ds.ds_lab_2024.service;
 
 import gr.hua.dit.ds.ds_lab_2024.entities.Property;
+import gr.hua.dit.ds.ds_lab_2024.entities.User;
 import gr.hua.dit.ds.ds_lab_2024.repositories.PropertyRepository;
 import org.springframework.stereotype.Service;
 
@@ -45,4 +46,9 @@ public class PropertyService {
     public List<String> getDistinctMunicipalities() {
         return propertyRepository.findDistinctMunicipalities();
     }
+    public List<Property> getPropertiesByOwner(User user) {
+        return propertyRepository.findByUser(user); // Assuming `propertyRepository` has this method
+    }
+
+
 }

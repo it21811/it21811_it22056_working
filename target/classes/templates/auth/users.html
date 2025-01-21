@@ -41,8 +41,10 @@
         </table>
     </div>
     <div th:if="${ #lists.isEmpty(users)}">
-        No Students found!
+        No Users found!
     </div>
+    <!-- Button to navigate to the tenancy requests page -->
+    <a href="/auth/verifyRequests" class="btn btn-warning" role="button">View Tenancy Requests</a>
     <a href="/register" class="btn btn-primary" role="button">Create new User</a>
 
 </div>

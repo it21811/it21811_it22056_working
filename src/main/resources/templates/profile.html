@@ -1,20 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{page_layout/layout}">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>User Profile</title>
 </head>
 <body>
-<h1>User Profile</h1>
+<div layout:fragment="main-content">
 
-<!-- Displaying User Information -->
-<p><strong>User ID:</strong> <span th:text="${user.id}"></span></p>
-<p><strong>Email:</strong> <span th:text="${user.email}"></span></p>
-<p><strong>Username:</strong> <span th:text="${user.username}"></span></p>
+  <!-- Check if the user exists and display the information -->
+  <div th:if="${user != null}">
+    <table class="table">
+      <thead>
+      <tr>
+        <th>User ID</th>
+        <th>Email</th>
+        <th>Username</th>
+        <th>Roles</th>  <!-- Added column for roles -->
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td th:text="${user.id}"></td>
+        <td th:text="${user.email}"></td>
+        <td th:text="${user.username}"></td>
+        <td>
+          <!-- Iterate over roles and display them -->
+          <span th:each="role : ${user.roles}" th:text="${role.name}"></span>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
 
-<!-- Masking the Password (not displaying the real password for security) -->
-<p><strong>Password:</strong> **********</p>
+  <!-- Display success message if tenancy is requested -->
+  <div th:if="${successMessage}">
+    <p th:text="${successMessage}" style="color:green;"></p>
+  </div>
 
+  <!-- Show error message if the user is already verified -->
+  <div th:if="${param.error == 'alreadyVerified'}">
+    <p style="color:red;">You have already been verified. No further action needed.</p>
+  </div>
+
+  <!-- Button to request tenancy if not already verified and not an admin -->
+  <div th:if="${user != null and user.verified != 2 and not(user.roles.contains('ROLE_ADMIN'))}">
+    <a href="/requestTenancy" class="btn btn-warning" role="button">Request Tenancy</a>
+  </div>
+
+  <!-- If no user exists, show message -->
+  <div th:if="${user == null}">
+    No user found!
+  </div>
+
+</div>
 </body>
 </html>

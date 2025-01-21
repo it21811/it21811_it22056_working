@@ -14,9 +14,11 @@
         <h3 class="masthead-brand">Cover</h3>
         <nav class="nav nav-masthead justify-content-center">
             <a class="nav-link" href="/" data-path="/" >Home</a>
-
+            <a class="nav-link" href="/profile" data-path="/profile" >Profile</a>
             <a class="nav-link" href="/property" data-path="/property">Properties</a>
             <a class="nav-link" href="/request" data-path="/request">Requests</a>
+            <!-- My Requests link for authenticated users -->
+            <a sec:authorize="isAuthenticated()" class="nav-link" href="/request/myRequests">My Requests</a>
             <a sec:authorize="hasRole('ROLE_ADMIN')" class="nav-link" href="/users">Users</a>
             </a>
             <a sec:authorize="!isAuthenticated()"  class="nav-link">

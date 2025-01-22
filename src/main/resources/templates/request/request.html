@@ -2,6 +2,7 @@
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/springsecurity5"
       layout:decorate="~{page_layout/layout}">
 
 <head>
@@ -25,14 +26,17 @@
         <option th:each="property : ${properties}" th:value="${property.propertyid}" th:text="${property.address}"></option>
       </select>
     </div>
-
     <div class="form-group">
       <label for="status">Status</label>
       <select id="status" class="form-control" th:field="*{status}">
-        <option value="1" th:text="'Verified'"></option>
         <option value="2" th:text="'Not Verified'"></option>
+        <option value="1" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}" th:text="'Verified'"></option>
       </select>
     </div>
+
+
+
+
 
     <button type="submit" class="btn btn-primary">Submit</button>
   </form>

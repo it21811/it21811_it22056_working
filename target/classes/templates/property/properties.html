@@ -31,10 +31,15 @@
                 <td>
                     <span th:if="${property.verified == 1}" th:text="'Yes'"></span>
                     <span th:if="${property.verified == 0}" th:text="'No'"></span>
+                    <a sec:authorize="hasRole('ADMIN')" th:if="${property.verified == 0}"
+                       th:href="@{'/property/verify/' + ${property.propertyid}}"
+                       class="btn btn-outline-success btn-sm">Verify</a>
                 </td>
                 <td>
-                    <a class="btn btn-outline-warning btn-sm" th:href="@{'/property/edit/' + ${property.propertyid}}">Edit</a>
-                    <a class="btn btn-outline-danger btn-sm" th:href="@{'/property/delete/' + ${property.propertyid}}">Delete</a>
+                    <a sec:authorize="hasRole('ADMIN')" class="btn btn-outline-warning btn-sm"
+                       th:href="@{'/property/edit/' + ${property.propertyid}}">Edit</a>
+                    <a sec:authorize="hasRole('ADMIN')" class="btn btn-outline-danger btn-sm"
+                       th:href="@{'/property/delete/' + ${property.propertyid}}">Delete</a>
                 </td>
             </tr>
             </tbody>
@@ -43,7 +48,7 @@
     <div th:if="${ #lists.isEmpty(properties)}">
         <p>No properties found!</p>
     </div>
-    <a sec:authorize="hasRole('ADMIN')" href="/property/new" class="btn btn-primary" role="button">Add New Property</a>
+    <a  href="/property/new" class="btn btn-primary" role="button">Add New Property</a>
     <a href="/property/filter" class="btn btn-secondary" role="button">Filter Properties</a>
 </div>
 </body>

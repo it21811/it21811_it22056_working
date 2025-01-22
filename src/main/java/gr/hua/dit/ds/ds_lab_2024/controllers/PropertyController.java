@@ -56,7 +56,7 @@ public class PropertyController {
         return "property/properties";
     }
 
-    @Secured("ROLE_ADMIN")
+
     @GetMapping("/new")
     public String addProperty(Model model){
         Property property = new Property();
@@ -67,7 +67,7 @@ public class PropertyController {
     }
 
 
-    @Secured("ROLE_ADMIN")
+
     @PostMapping("/new")
     public String saveProperty(@Valid @ModelAttribute("property") Property property,BindingResult theBindingResult, Model model) {
         if (theBindingResult.hasErrors()) {
@@ -80,7 +80,7 @@ public class PropertyController {
             return "property/properties";
         }
     }
-
+    @Secured("ROLE_ADMIN")
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Integer id, Model model) {
         Property property = propertyService.getPropertyById(id);
@@ -106,7 +106,7 @@ public class PropertyController {
         model.addAttribute("msg", "Property updated successfully!");
         return "redirect:/property";
     }
-
+    @Secured("ROLE_ADMIN")
     @GetMapping("/delete/{id}")
     public String deleteProperty(@PathVariable Integer id, Model model) {
         propertyService.deleteProperty(id);
@@ -132,6 +132,19 @@ public class PropertyController {
         List<Property> filteredProperties = propertyService.filterProperties(address, municipality, minPrice, maxPrice, verified);
         model.addAttribute("properties", filteredProperties);
         return "property/properties"; // Use the existing properties listing template to show results
+    }
+    @Secured("ROLE_ADMIN")
+    @GetMapping("/verify/{id}")
+    public String verifyProperty(@PathVariable Integer id, Model model) {
+        try {
+            Property property = propertyService.getPropertyById(id);
+            property.setVerified(1); // Set the property as verified
+            propertyService.updateProperty(property); // Save the changes
+            model.addAttribute("msg", "Property verified successfully!");
+        } catch (RuntimeException e) {
+            model.addAttribute("errorMsg", "Error verifying property: " + e.getMessage());
+        }
+        return "redirect:/property";
     }
 
 

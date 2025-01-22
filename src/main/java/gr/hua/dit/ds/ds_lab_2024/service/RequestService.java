@@ -31,7 +31,7 @@ public class RequestService {
 
     // Method to create a request, automatically setting the status to 1 (verified) by default
     public void createRequest(Request request) {
-        request.setStatus(2); // Set status to 1 by default for "verified"
+     //   request.setStatus(2); // Set status to 1 by default for "verified"
         requestRepository.save(request);
     }
 

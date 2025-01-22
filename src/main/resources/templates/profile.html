@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{page_layout/layout}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{page_layout/layout}">
 <head>
   <meta charset="UTF-8">
   <title>User Profile</title>
@@ -42,10 +42,12 @@
     <p style="color:red;">You have already been verified. No further action needed.</p>
   </div>
 
-  <!-- Button to request tenancy if not already verified and not an admin -->
-  <div th:if="${user != null and user.verified != 2 and not(user.roles.contains('ROLE_ADMIN'))}">
-    <a href="/requestTenancy" class="btn btn-warning" role="button">Request Tenancy</a>
+  <div th:if="${user != null and user.verified != 2}">
+    <sec:authorize access="!(#user.roles.contains(''ROLE_ADMIN''))">
+      <a href="/requestTenancy" class="btn btn-warning" role="button">Request Tenancy</a>
+    </sec:authorize>
   </div>
+
 
   <!-- If no user exists, show message -->
   <div th:if="${user == null}">

@@ -125,6 +125,7 @@ public class PropertyController {
         model.addAttribute("msg", "Property deleted successfully!");
         return "redirect:/property";
     }
+    @Secured({"ROLE_ADMIN", "ROLE_TENANT"})
     @GetMapping("/filter")
     public String showFilterPage(Model model) {
         List<String> municipalities = propertyService.getDistinctMunicipalities();
@@ -133,6 +134,7 @@ public class PropertyController {
         return "property/filter-properties";
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_TENANT"})
     @GetMapping("/filter/results")
     public String filterProperties(
             @RequestParam(required = false) String address,

@@ -5,6 +5,7 @@ import gr.hua.dit.ds.ds_lab_2024.entities.User;
 import gr.hua.dit.ds.ds_lab_2024.repositories.RoleRepository;
 import gr.hua.dit.ds.ds_lab_2024.service.UserService;
 import jakarta.annotation.PostConstruct;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -93,6 +94,7 @@ public class UserController {
         return "index";
     }
 
+    @Secured("ROLE_ADMIN")
     @GetMapping("/users")
     public String showUsers(Model model){
         model.addAttribute("users", userService.getUsers());
@@ -100,12 +102,14 @@ public class UserController {
         return "auth/users";
     }
 
+    @Secured("ROLE_ADMIN")
     @GetMapping("/user/{user_id}")
     public String showUser(@PathVariable Long user_id, Model model){
         model.addAttribute("user", userService.getUser(user_id));
         return "auth/user";
     }
 
+    @Secured("ROLE_ADMIN")
     @PostMapping("/user/{user_id}")
     public String saveStudent(@PathVariable Long user_id, @ModelAttribute("user") User user, Model model) {
         User the_user = (User) userService.getUser(user_id);
@@ -116,6 +120,7 @@ public class UserController {
         return "auth/users";
     }
 
+    @Secured("ROLE_ADMIN")
     @GetMapping("/user/role/delete/{user_id}/{role_id}")
     public String deleteRolefromUser(@PathVariable Long user_id, @PathVariable Integer role_id, Model model){
         User user = (User) userService.getUser(user_id);
@@ -128,7 +133,7 @@ public class UserController {
         return "auth/users";
 
     }
-
+    @Secured("ROLE_ADMIN")
     @GetMapping("/user/role/add/{user_id}/{role_id}")
     public String addRoletoUser(@PathVariable Long user_id, @PathVariable Integer role_id, Model model){
         User user = (User) userService.getUser(user_id);
@@ -141,6 +146,7 @@ public class UserController {
         return "auth/users";
 
     }
+    @Secured("ROLE_ADMIN")
     @GetMapping("/deleteuser/{user_id}")
     public String deleteUser(@PathVariable Long user_id, Model model) {
         userService.deleteUser(user_id);
@@ -179,6 +185,7 @@ public class UserController {
 
 
     // New method for admin to view and approve tenancy requests
+    @Secured("ROLE_ADMIN")
     @GetMapping("/auth/verifyRequests")
     public String showVerificationRequests(Model model) {
         // Fetch users who have requested tenancy (verified == 1)
@@ -193,6 +200,7 @@ public class UserController {
     }
 
     // New method for admin to approve tenancy and set verified to 2
+    @Secured("ROLE_ADMIN")
     @GetMapping("/auth/approveTenancy/{userId}")
     public String approveTenancy(@PathVariable Long userId) {
         System.out.println("test test");

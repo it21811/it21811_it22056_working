@@ -59,9 +59,21 @@ public class PropertyController {
 
     @GetMapping("/new")
     public String addProperty(Model model){
+        // Fetch the logged-in user
+        var loggedInUser = userService.getLoggedInUserByEmail(); // Assuming this method exists
+        boolean isAdmin = loggedInUser.getRoles().stream()
+                .anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
         Property property = new Property();
         model.addAttribute("property", property);
-        model.addAttribute("users", userService.getUsers()); // Adding users for the dropdown
+       /* if (isAdmin) {
+
+            // For admins, pass all users
+            model.addAttribute("users", userService.getUsers());
+        } else {
+            // For user  pass logged-in user
+            model.addAttribute("users", List.of(loggedInUser));
+        } */
+       model.addAttribute("users", userService.getUsers()); // Adding users for the dropdown
         return "property/property";
 
     }

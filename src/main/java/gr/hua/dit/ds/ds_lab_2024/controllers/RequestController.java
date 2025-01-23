@@ -1,5 +1,6 @@
 package gr.hua.dit.ds.ds_lab_2024.controllers;
 
+import gr.hua.dit.ds.ds_lab_2024.entities.Property;
 import gr.hua.dit.ds.ds_lab_2024.entities.Request;
 import gr.hua.dit.ds.ds_lab_2024.service.PropertyService;
 import gr.hua.dit.ds.ds_lab_2024.service.RequestService;
@@ -43,6 +44,7 @@ public class RequestController {
         // Fetch the logged-in user
         var loggedInUser = userService.getLoggedInUserByEmail(); // Assuming this method exists
 
+
         // If the user is a tenant, ensure they are verified
         boolean isTenant = loggedInUser.getRoles().stream()
                 .anyMatch(role -> role.getName().equals("ROLE_TENANT"));
@@ -64,8 +66,24 @@ public class RequestController {
             // For admins, pass all tenants
             model.addAttribute("tenants", userService.getUsers());
         }
+        boolean isAdmin = loggedInUser.getRoles().stream()
+                .anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
+        if (isAdmin) {
 
-        model.addAttribute("properties", propertyService.getProperties());
+            // For admins, pass all properties
+            model.addAttribute("properties", propertyService.getProperties());
+        } else {
+            List<Property> verifiedProperties = propertyService.filterProperties(
+                    null,   // No filter on address
+                    null,   // No filter on municipality
+                    null,   // No filter on minPrice
+                    null,   // No filter on maxPrice
+                    1       // Filter by verified = 1
+            );
+
+            model.addAttribute("properties", verifiedProperties);
+        }
+      //  model.addAttribute("properties", propertyService.getProperties());
         return "request/request";
     }
 

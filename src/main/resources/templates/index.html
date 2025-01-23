@@ -7,10 +7,39 @@
 <head>
   <meta charset="UTF-8">
   <title>Title</title>
+  <style>
+    body {
+      color: #ecf0f1; /* Dark text color for better visibility */
+      font-family: Arial, sans-serif;
+    }
+    .role-title {
+      font-weight: bold;
+      color: #ecf0f1; /* Light color for role titles */
+    }
+    .role-description {
+      margin-left: 15px; /* Adds some spacing for better readability */
+      color: #bdc3c7; /* Lighter gray for descriptions */
+    }
+    h2 {
+      color: #ecf0f1; /* Same color as the role titles */
+    }
+  </style>
 </head>
 <body>
 <div layout:fragment="main-content">
-  <h1>This is Index Page!</h1>
+  <h2>Roles and Responsibilities</h2>
+  <p>
+    <span class="role-title">Administrator:</span>
+    <span class="role-description">Approves new property listings, verifies tenants, and manages the platform.</span>
+  </p>
+  <p>
+    <span class="role-title">Owner:</span>
+    <span class="role-description">Lists properties for rent, reviews rental applications, and approves tenant requests.</span>
+  </p>
+  <p>
+    <span class="role-title">Tenant:</span>
+    <span class="role-description">Searches for rental properties, submits rental applications, and can request property viewings.</span>
+  </p>
 </div>
 </body>
 </html>

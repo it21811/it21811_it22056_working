@@ -30,7 +30,7 @@
         <div class="form-group">
             <label for="verified">Verified</label>
             <select id="verified" class="form-control" th:field="*{verified}">
-                <option value="1" th:text="'Yes'"></option>
+                <option value="1" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}" th:text="'Yes'"></option>
                 <option value="0" th:text="'No'"></option>
             </select>
         </div>

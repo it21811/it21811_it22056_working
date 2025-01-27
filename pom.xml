@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>gr.hua.dit.ds</groupId>
-	<artifactId>ds-lab-2024</artifactId>
+	<artifactId>it21811_it22056</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>ds-lab-2024</name>
 	<description>Demo project for Spring Boot</description>
